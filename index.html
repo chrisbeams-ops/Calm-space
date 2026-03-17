@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Calm Space</title>
+
+<!-- PWA / iOS meta tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calm Space">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1923">
+
+<!-- Inline manifest via data URI -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Calm%20Space%22%2C%22short_name%22%3A%22Calm%20Space%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f1923%22%2C%22theme_color%22%3A%22%230f1923%22%2C%22orientation%22%3A%22portrait%22%7D">
+
+<!-- Apple touch icon (generated inline via canvas) -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #0f1923;
+    --bg2: #162030;
+    --bg3: #1e2d40;
+    --card: #1a2a3a;
+    --border: rgba(120,180,220,0.12);
+    --accent: #7eb8d4;
+    --accent2: #c4a882;
+    --accent3: #8bc4a0;
+    --text: #e8f0f5;
+    --text2: #8fb0c8;
+    --text3: #6a8fa8;
+    --danger: #e07070;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: -webkit-fill-available;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bot);
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 16px 16px 10px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .time-badge {
+    display: inline-block;
+    background: rgba(126,184,212,0.1);
+    border: 1px solid rgba(126,184,212,0.2);
+    color: var(--accent);
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+  }
+
+  /* Scrollable content */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 14px 24px;
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    flex-shrink: 0;
+    display: flex;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .bottom-nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex: 0 0 auto;
+    min-width: 70px;
+    background: transparent;
+    border: none;
+    color: var(--text3);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    padding: 10px 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.3;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .nav-btn.active { color: var(--accent); font-weight: 500; border-top: 2px solid var(--accent); }
+  .nav-icon { display: block; font-size: 1.15rem; margin-bottom: 2px; }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
+  .card-title { font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .card-sub { font-size: 0.78rem; color: var(--text3); margin-bottom: 14px; line-height: 1.5; font-weight: 300; }
+
+  /* Buttons */
+  .btn { background: rgba(126,184,212,0.12); border: 1px solid rgba(126,184,212,0.25); color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; padding: 11px 18px; border-radius: 10px; cursor: pointer; transition: all 0.15s; -webkit-user-select: none; user-select: none; }
+  .btn:active { opacity: 0.7; transform: scale(0.97); }
+  .btn-warm { background: rgba(196,168,130,0.12); border-color: rgba(196,168,130,0.25); color: var(--accent2); }
+  .btn-green { background: rgba(139,196,160,0.12); border-color: rgba(139,196,160,0.25); color: var(--accent3); }
+  .btn-full { width: 100%; text-align: center; }
+
+  /* TRACK RECORD */
+  .mantra-card { background: linear-gradient(135deg, rgba(126,184,212,0.07) 0%, rgba(139,196,160,0.07) 100%); border: 1px solid rgba(126,184,212,0.18); border-radius: 16px; padding: 22px 18px; text-align: center; margin-bottom: 12px; }
+  .mantra-card p { font-family: 'Lora', serif; font-size: 1rem; color: var(--text); line-height: 1.8; font-weight: 400; }
+  .mantra-card .mantra-sub { font-size: 0.75rem; color: var(--text3); margin-top: 8px; font-weight: 300; font-style: italic; }
+
+  .stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .stat-card { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; }
+  .stat-card .num { font-family: 'Lora', serif; font-size: 2rem; font-weight: 600; line-height: 1; }
+  .stat-card .lbl { font-size: 0.65rem; color: var(--text3); margin-top: 4px; line-height: 1.4; font-weight: 300; }
+  .num-green { color: var(--accent3); }
+  .num-blue { color: var(--accent); }
+  .num-warm { color: var(--accent2); }
+
+  .evidence-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .evidence-bar .e-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .evidence-bar .e-label { font-size: 0.78rem; color: var(--text2); }
+  .evidence-bar .e-val { font-size: 0.78rem; font-weight: 500; }
+  .bar-track { height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+
+  .truth-box { background: var(--bg2); border-left: 3px solid var(--accent3); border-radius: 0 12px 12px 0; padding: 14px 16px; margin-bottom: 10px; }
+  .truth-box p { font-family: 'Lora', serif; font-size: 0.85rem; color: var(--text2); line-height: 1.8; font-style: italic; }
+  .truth-box .truth-label { font-family: 'DM Sans', sans-serif; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent3); font-weight: 500; font-style: normal; display: block; margin-bottom: 6px; }
+
+  .outage-timeline { position: relative; padding-left: 18px; }
+  .outage-timeline::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: var(--bg3); border-radius: 1px; }
+  .timeline-item { position: relative; padding: 10px 0 10px 14px; }
+  .timeline-dot { position: absolute; left: -13px; top: 15px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent2); border: 2px solid var(--bg); }
+  .timeline-item .t-year { font-size: 0.68rem; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .timeline-item .t-desc { font-size: 0.8rem; color: var(--text2); margin-top: 2px; line-height: 1.5; font-weight: 300; }
+  .t-badges { margin-top: 5px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .t-badge { display: inline-block; font-size: 0.66rem; padding: 2px 8px; border-radius: 8px; font-weight: 500; }
+  .badge-ext { background: rgba(196,168,130,0.12); color: var(--accent2); border: 1px solid rgba(196,168,130,0.2); }
+  .badge-resolved { background: rgba(139,196,160,0.12); color: var(--accent3); border: 1px solid rgba(139,196,160,0.2); }
+
+  /* Breathing */
+  .breath-circle-wrap { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
+  .breath-circle { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(126,184,212,0.25) 0%, rgba(126,184,212,0.05) 70%); border: 2px solid rgba(126,184,212,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Lora', serif; font-size: 0.9rem; color: var(--accent); }
+  .breath-circle.inhale { animation: expand 4s ease-in-out forwards; }
+  .breath-circle.hold { transform: scale(1.35); }
+  .breath-circle.exhale { animation: contract 6s ease-in-out forwards; }
+  @keyframes expand { from { transform: scale(1); } to { transform: scale(1.35); } }
+  @keyframes contract { from { transform: scale(1.35); } to { transform: scale(1); } }
+  .breath-label { margin-top: 16px; font-size: 1rem; font-family: 'Lora', serif; color: var(--text2); min-height: 26px; text-align: center; }
+  .breath-count-label { margin-top: 6px; font-size: 0.75rem; color: var(--text3); }
+  .breath-controls { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+
+  /* Grounding */
+  .grounding-step { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 9px; display: flex; align-items: flex-start; gap: 11px; -webkit-user-select: none; user-select: none; }
+  .grounding-step.done { border-color: rgba(139,196,160,0.3); background: rgba(139,196,160,0.05); }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(126,184,212,0.1); border: 1px solid rgba(126,184,212,0.2); color: var(--accent); font-size: 0.72rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .grounding-step.done .step-num { background: rgba(139,196,160,0.15); border-color: rgba(139,196,160,0.3); color: var(--accent3); }
+  .step-text strong { display: block; font-size: 0.83rem; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .step-text span { font-size: 0.75rem; color: var(--text3); font-weight: 300; }
+
+  /* Worry */
+  textarea { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 300; padding: 13px; resize: none; line-height: 1.6; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  textarea:focus { border-color: rgba(126,184,212,0.3); }
+  textarea::placeholder { color: var(--text3); }
+  .ai-response { background: var(--bg2); border: 1px solid rgba(126,184,212,0.2); border-radius: 12px; padding: 14px; margin-top: 12px; font-size: 0.82rem; line-height: 1.7; color: var(--text2); font-weight: 300; }
+  .ai-response .ai-label { font-size: 0.68rem; color: var(--accent); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block; }
+  .loading-dots span { display: inline-block; animation: dot 1.4s infinite both; color: var(--accent); font-size: 1.1rem; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot { 0%,80%,100%{opacity:.2}40%{opacity:1} }
+
+  .worry-timer-display { font-family:'Lora',serif; font-size:2rem; color:var(--accent); letter-spacing:0.05em; text-align:center; padding: 12px 0; }
+
+  /* Control */
+  .control-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; gap: 11px; align-items: flex-start; }
+  .control-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .dot-yes { background: var(--accent3); }
+  .dot-no { background: var(--danger); opacity: 0.7; }
+  .control-item .clabel { font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .yes-label { color: var(--accent3); }
+  .no-label { color: var(--danger); opacity: 0.8; }
+  .control-item p { font-size: 0.8rem; color: var(--text2); line-height: 1.5; font-weight: 300; }
+
+  /* Outage */
+  .outage-question { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .outage-question p { font-family: 'Lora', serif; font-size: 0.87rem; color: var(--text2); margin-bottom: 10px; line-height: 1.6; font-style: italic; }
+  .answer-area { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); border-radius: 0; padding: 8px 2px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; outline: none; }
+  .answer-area:focus { border-bottom-color: rgba(126,184,212,0.4); }
+  .section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-weight: 500; margin-bottom: 12px; }
+
+  .reminder-box { background: var(--bg2); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 14px 16px; }
+  .reminder-box p { font-family: 'Lora', serif; font-size: 0.87rem; color: var(--text2); line-height: 1.8; font-style: italic; }
+
+  /* Winddown */
+  .winddown-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; margin-bottom: 9px; display: flex; align-items: center; gap: 12px; -webkit-user-select: none; user-select: none; transition: all 0.2s; }
+  .winddown-item.checked { border-color: rgba(196,168,130,0.3); background: rgba(196,168,130,0.04); }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--text3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.72rem; transition: all 0.2s; }
+  .winddown-item.checked .check-box { background: rgba(196,168,130,0.2); border-color: var(--accent2); color: var(--accent2); }
+  .winddown-text strong { display: block; font-size: 0.83rem; font-weight: 500; color: var(--text); }
+  .winddown-text span { font-size: 0.75rem; color: var(--text3); font-weight: 300; }
+  .winddown-time { margin-left: auto; font-size: 0.7rem; color: var(--text3); font-weight: 300; flex-shrink: 0; }
+
+  .progress-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 2px; transition: width 0.4s; }
+
+  .tab-content { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)} }
+
+  /* Offline banner */
+  .offline-banner { display: none; background: rgba(224,112,112,0.15); border: 1px solid rgba(224,112,112,0.3); color: var(--danger); font-size: 0.75rem; text-align: center; padding: 7px; }
+  body.offline .offline-banner { display: block; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <div class="offline-banner">⚠ You're offline — all tools still work except "Get perspective"</div>
+
+  <div class="header">
+    <div class="time-badge" id="timeBadge">–</div>
+    <h1>Your Calm Space</h1>
+  </div>
+
+  <div class="content-area" id="contentArea">
+
+    <!-- TRACK RECORD -->
+    <div id="tab-record" class="tab-content">
+      <div class="mantra-card">
+        <p>"In 6 years, my systems have never caused a production outage. Not once."</p>
+        <div class="mantra-sub">Read this. Breathe. Let it land.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Your actual track record</div>
+        <div class="card-sub">The evidence your anxious brain keeps forgetting.</div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="num num-green">3</div><div class="lbl">total incidents in 6 years</div></div>
+          <div class="stat-card"><div class="num num-blue">0</div><div class="lbl">caused by your systems</div></div>
+          <div class="stat-card"><div class="num num-warm">6</div><div class="lbl">years stable production</div></div>
+        </div>
+        <div class="evidence-bar">
+          <div class="e-top"><span class="e-label">Incidents caused by your systems</span><span class="e-val num-green">0 of 3</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--accent3)"></div></div>
+        </div>
+        <div class="evidence-bar">
+          <div class="e-top"><span class="e-label">Days without a prod incident</span><span class="e-val" style="color:var(--accent)">~2,190 days</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:99%;background:linear-gradient(90deg,var(--accent3),var(--accent))"></div></div>
+        </div>
+        <div class="evidence-bar">
+          <div class="e-top"><span class="e-label">Chance something goes wrong today</span><span class="e-val" style="color:var(--accent2)">less than 1%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:1%;background:var(--accent2)"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">All 3 incidents — every one external</div>
+        <div class="card-sub">None caused by your systems. Every single one resolved.</div>
+        <div class="outage-timeline">
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="t-year">Incident 1</div><div class="t-desc">External cause — not your systems. Team responded and resolved.</div><div class="t-badges"><span class="t-badge badge-ext">External</span><span class="t-badge badge-resolved">Resolved ✓</span></div></div>
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="t-year">Incident 2</div><div class="t-desc">External cause — not your systems. Team responded and resolved.</div><div class="t-badges"><span class="t-badge badge-ext">External</span><span class="t-badge badge-resolved">Resolved ✓</span></div></div>
+          <div class="timeline-item"><div class="timeline-dot"></div><div class="t-year">Incident 3</div><div class="t-desc">External cause — not your systems. Team responded and resolved.</div><div class="t-badges"><span class="t-badge badge-ext">External</span><span class="t-badge badge-resolved">Resolved ✓</span></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="truth-box">
+          <span class="truth-label">What the evidence says</span>
+          <p>Your systems are solid. In 6 years you haven't built something that broke production. The worry isn't based on your history — it's your nervous system running a threat simulation that doesn't match reality.</p>
+        </div>
+        <div class="truth-box" style="border-left-color:var(--accent2);margin-bottom:0">
+          <span class="truth-label" style="color:var(--accent2)">When anxiety says "something will go wrong"</span>
+          <p>Your track record says: across ~2,190 days, your systems have never been the cause. The anxiety is lying to you. The data is on your side.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BREATHE -->
+    <div id="tab-breathe" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Box breathing</div>
+        <div class="card-sub">Used by Navy SEALs to calm the nervous system. Slows heart rate within 2–3 cycles.</div>
+        <div class="breath-circle-wrap">
+          <div class="breath-circle" id="breathCircle"><span id="breathCount">4</span></div>
+          <div class="breath-label" id="breathLabel">Press start when ready</div>
+          <div class="breath-count-label" id="cycleCount"></div>
+        </div>
+        <div class="breath-controls">
+          <button class="btn" id="breathBtn" onclick="toggleBreath()">Start</button>
+          <button class="btn btn-warm" onclick="resetBreath()">Reset</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">4-7-8 breathing</div>
+        <div class="card-sub">Activates the parasympathetic nervous system. Best before sleep or during acute anxiety.</div>
+        <div class="breath-circle-wrap">
+          <div class="breath-circle" id="breathCircle2" style="border-color:rgba(196,168,130,0.3);background:radial-gradient(circle,rgba(196,168,130,0.2) 0%,rgba(196,168,130,0.04) 70%)">
+            <span id="breathCount2" style="color:var(--accent2)">4</span>
+          </div>
+          <div class="breath-label" id="breathLabel2">Press start when ready</div>
+        </div>
+        <div class="breath-controls">
+          <button class="btn btn-warm" id="breathBtn2" onclick="toggleBreath2()">Start</button>
+          <button class="btn" onclick="resetBreath2()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUNDING -->
+    <div id="tab-grounding" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">5-4-3-2-1 grounding</div>
+        <div class="card-sub">Pulls your attention into the present moment. Tap each step as you do it.</div>
+        <div class="grounding-step" onclick="toggleGround(0)" id="gs0"><div class="step-num">5</div><div class="step-text"><strong>Five things you can see</strong><span>Look around. Name them quietly...</span></div></div>
+        <div class="grounding-step" onclick="toggleGround(1)" id="gs1"><div class="step-num">4</div><div class="step-text"><strong>Four things you can touch</strong><span>Your phone, clothes, floor...</span></div></div>
+        <div class="grounding-step" onclick="toggleGround(2)" id="gs2"><div class="step-num">3</div><div class="step-text"><strong>Three things you can hear</strong><span>Distant sounds, your own breathing...</span></div></div>
+        <div class="grounding-step" onclick="toggleGround(3)" id="gs3"><div class="step-num">2</div><div class="step-text"><strong>Two things you can smell</strong><span>Or remember two calming scents...</span></div></div>
+        <div class="grounding-step" onclick="toggleGround(4)" id="gs4"><div class="step-num">1</div><div class="step-text"><strong>One thing you can taste</strong><span>Even just what's in your mouth now...</span></div></div>
+        <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" id="groundProgress" style="width:0%"></div></div>
+        <button class="btn btn-green btn-full" style="margin-top:12px" onclick="resetGround()">Reset</button>
+      </div>
+    </div>
+
+    <!-- WORRIES -->
+    <div id="tab-worries" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Offload your worries</div>
+        <div class="card-sub">Write whatever's in your head. Don't edit. Just let it out.</div>
+        <textarea id="worryText" rows="6" placeholder="What's weighing on you right now?"></textarea>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-full" onclick="getWorryResponse()">Get perspective</button>
+          <button class="btn btn-warm" onclick="clearWorry()">Clear</button>
+        </div>
+        <div id="worryResponse" style="display:none"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Worry window</div>
+        <div class="card-sub">10 minutes to worry deliberately. Then close it. You've done your part.</div>
+        <div class="worry-timer-display" id="worryTimer">10:00</div>
+        <div style="font-size:0.73rem;color:var(--text3);text-align:center;margin-bottom:14px">After this, the worry is processed.</div>
+        <div class="breath-controls">
+          <button class="btn" id="worryTimerBtn" onclick="toggleWorryTimer()">Start</button>
+          <button class="btn btn-warm" onclick="resetWorryTimer()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROL -->
+    <div id="tab-control" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">What's in your control</div>
+        <div class="card-sub">Your brain treats everything as a threat. This reminds you where your power actually is.</div>
+        <div class="control-item"><div class="control-dot dot-yes"></div><div><div class="clabel yes-label">In your control</div><p>The runbooks and processes you put in place</p></div></div>
+        <div class="control-item"><div class="control-dot dot-yes"></div><div><div class="clabel yes-label">In your control</div><p>How clearly you communicate during an incident</p></div></div>
+        <div class="control-item"><div class="control-dot dot-yes"></div><div><div class="clabel yes-label">In your control</div><p>The quality and culture of your team</p></div></div>
+        <div class="control-item"><div class="control-dot dot-yes"></div><div><div class="clabel yes-label">In your control</div><p>How you respond to problems — not whether they happen</p></div></div>
+        <div class="control-item"><div class="control-dot dot-yes"></div><div><div class="clabel yes-label">In your control</div><p>Your own recovery: rest, boundaries, screen-free time</p></div></div>
+        <div class="control-item"><div class="control-dot dot-no"></div><div><div class="clabel no-label">Not in your control</div><p>Whether an outage happens at all</p></div></div>
+        <div class="control-item"><div class="control-dot dot-no"></div><div><div class="clabel no-label">Not in your control</div><p>Other people's initial reactions or judgements</p></div></div>
+        <div class="control-item"><div class="control-dot dot-no"></div><div><div class="clabel no-label">Not in your control</div><p>External dependencies and third-party infrastructure</p></div></div>
+        <div class="control-item"><div class="control-dot dot-no"></div><div><div class="clabel no-label">Not in your control</div><p>The timing of when incidents occur</p></div></div>
+      </div>
+    </div>
+
+    <!-- OUTAGE -->
+    <div id="tab-outage" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Outage anxiety check-in</div>
+        <div class="card-sub">Separate genuine preparation from spinning anxiety. Write honestly.</div>
+        <div class="section-label">When anxiety spikes, ask yourself:</div>
+        <div class="outage-question"><p>"Have I done what I reasonably can to prevent and respond to this?"</p><textarea class="answer-area" rows="2" placeholder="Write your answer..."></textarea></div>
+        <div class="outage-question"><p>"If an outage happened right now, do I have people and processes that could handle it without me being mentally on?"</p><textarea class="answer-area" rows="2" placeholder="Write your answer..."></textarea></div>
+        <div class="outage-question"><p>"Is this worry telling me about a real gap — or is it just my nervous system misfiring?"</p><textarea class="answer-area" rows="2" placeholder="Write your answer..."></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">The 3am reminder</div>
+        <div class="reminder-box">
+          <p>You have built the systems. You have the team. In 6 years, none of your 3 incidents were caused by your systems — not one. The worry you feel right now is not protecting you. It is exhausting you. Your job right now is to rest. Worrying is not the same as being prepared. You are already prepared.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WINDDOWN -->
+    <div id="tab-winddown" class="tab-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Evening wind-down</div>
+        <div class="card-sub">Start 45–60 minutes before bed. Tick each step as you go.</div>
+        <div class="winddown-item" onclick="toggleWinddown(0)" id="wd0"><div class="check-box"></div><div class="winddown-text"><strong>Hard stop on work</strong><span>Close laptop, silence notifications</span></div><div class="winddown-time">9:00</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(1)" id="wd1"><div class="check-box"></div><div class="winddown-text"><strong>Write tomorrow's three things</strong><span>Just three priorities — nothing more</span></div><div class="winddown-time">9:05</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(2)" id="wd2"><div class="check-box"></div><div class="winddown-text"><strong>Move your body gently</strong><span>Short walk, stretching, or yoga</span></div><div class="winddown-time">9:10</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(3)" id="wd3"><div class="check-box"></div><div class="winddown-text"><strong>Screens off or in another room</strong><span>Phone face-down, TV off</span></div><div class="winddown-time">9:30</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(4)" id="wd4"><div class="check-box"></div><div class="winddown-text"><strong>Something slow and analogue</strong><span>Read a book, journal, make tea</span></div><div class="winddown-time">9:35</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(5)" id="wd5"><div class="check-box"></div><div class="winddown-text"><strong>4-7-8 breathing</strong><span>3–5 cycles before sleep</span></div><div class="winddown-time">10:25</div></div>
+        <div class="winddown-item" onclick="toggleWinddown(6)" id="wd6"><div class="check-box"></div><div class="winddown-text"><strong>Consistent sleep time</strong><span>Same time every night, weekends too</span></div><div class="winddown-time">10:30</div></div>
+        <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" id="winddownProgress" style="width:0%;background:linear-gradient(90deg,var(--accent2),#e8c090)"></div></div>
+        <div style="font-size:0.72rem;color:var(--text3);margin-top:5px;text-align:right" id="winddownCount">0 of 7</div>
+        <button class="btn btn-warm btn-full" style="margin-top:10px" onclick="resetWinddown()">Reset for tonight</button>
+      </div>
+    </div>
+
+  </div><!-- end content-area -->
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showTab('record')"><span class="nav-icon">🏆</span>Record</button>
+    <button class="nav-btn" onclick="showTab('breathe')"><span class="nav-icon">🌬</span>Breathe</button>
+    <button class="nav-btn" onclick="showTab('grounding')"><span class="nav-icon">⚓</span>Ground</button>
+    <button class="nav-btn" onclick="showTab('worries')"><span class="nav-icon">📝</span>Worries</button>
+    <button class="nav-btn" onclick="showTab('control')"><span class="nav-icon">🎯</span>Control</button>
+    <button class="nav-btn" onclick="showTab('outage')"><span class="nav-icon">🖥</span>Outage</button>
+    <button class="nav-btn" onclick="showTab('winddown')"><span class="nav-icon">🌙</span>Wind down</button>
+  </div>
+
+</div><!-- end app-shell -->
+
+<script>
+// Time
+function updateTime(){const h=new Date().getHours();document.getElementById('timeBadge').textContent=`Good ${h<12?'Morning':h<17?'Afternoon':'Evening'}`;}
+updateTime();
+
+// Offline detection
+window.addEventListener('online',()=>document.body.classList.remove('offline'));
+window.addEventListener('offline',()=>document.body.classList.add('offline'));
+if(!navigator.onLine)document.body.classList.add('offline');
+
+// Tabs
+const tabs=['record','breathe','grounding','worries','control','outage','winddown'];
+function showTab(name){
+  tabs.forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>{b.classList.toggle('active',tabs[i]===name);});
+  document.getElementById('contentArea').scrollTop=0;
+}
+
+// Box breathing
+let bRun=false,bTimer=null,bPhase=0,bSec=4,bCycles=0;
+const bP=[{l:'Inhale...',d:4,c:'inhale'},{l:'Hold...',d:4,c:'hold'},{l:'Exhale...',d:4,c:'exhale'},{l:'Hold...',d:4,c:'hold'}];
+function runBreath(){const p=bP[bPhase];const circ=document.getElementById('breathCircle');document.getElementById('breathLabel').textContent=p.l;circ.className='breath-circle '+p.c;bSec=p.d;document.getElementById('breathCount').textContent=bSec;clearInterval(bTimer);bTimer=setInterval(()=>{bSec--;document.getElementById('breathCount').textContent=bSec;if(bSec<=0){clearInterval(bTimer);bPhase=(bPhase+1)%4;if(bPhase===0){bCycles++;document.getElementById('cycleCount').textContent=`${bCycles} cycle${bCycles!==1?'s':''} complete`;}if(bRun)runBreath();}},1000);}
+function toggleBreath(){bRun=!bRun;document.getElementById('breathBtn').textContent=bRun?'Pause':'Resume';if(bRun)runBreath();else clearInterval(bTimer);}
+function resetBreath(){bRun=false;clearInterval(bTimer);bPhase=0;bSec=4;bCycles=0;document.getElementById('breathBtn').textContent='Start';document.getElementById('breathCircle').className='breath-circle';document.getElementById('breathLabel').textContent='Press start when ready';document.getElementById('breathCount').textContent='4';document.getElementById('cycleCount').textContent='';}
+
+// 4-7-8
+let b2R=false,b2T=null,b2P=0,b2S=4;
+const b2Ph=[{l:'Inhale through nose...',d:4,c:'inhale'},{l:'Hold...',d:7,c:'hold'},{l:'Exhale through mouth...',d:8,c:'exhale'}];
+function runBreath2(){const p=b2Ph[b2P];document.getElementById('breathCircle2').className='breath-circle '+p.c;document.getElementById('breathLabel2').textContent=p.l;b2S=p.d;document.getElementById('breathCount2').textContent=b2S;clearInterval(b2T);b2T=setInterval(()=>{b2S--;document.getElementById('breathCount2').textContent=b2S;if(b2S<=0){clearInterval(b2T);b2P=(b2P+1)%3;if(b2R)runBreath2();}},1000);}
+function toggleBreath2(){b2R=!b2R;document.getElementById('breathBtn2').textContent=b2R?'Pause':'Resume';if(b2R)runBreath2();else clearInterval(b2T);}
+function resetBreath2(){b2R=false;clearInterval(b2T);b2P=0;b2S=4;document.getElementById('breathBtn2').textContent='Start';document.getElementById('breathCircle2').className='breath-circle';document.getElementById('breathLabel2').textContent='Press start when ready';document.getElementById('breathCount2').textContent='4';}
+
+// Grounding
+let gDone=new Set();
+function toggleGround(i){const el=document.getElementById('gs'+i);if(gDone.has(i)){gDone.delete(i);el.classList.remove('done');el.querySelector('.step-num').textContent=[5,4,3,2,1][i];}else{gDone.add(i);el.classList.add('done');el.querySelector('.step-num').textContent='✓';}document.getElementById('groundProgress').style.width=(gDone.size/5*100)+'%';}
+function resetGround(){gDone.clear();for(let i=0;i<5;i++){const el=document.getElementById('gs'+i);el.classList.remove('done');el.querySelector('.step-num').textContent=[5,4,3,2,1][i];}document.getElementById('groundProgress').style.width='0%';}
+
+// Worry timer
+let wTR=false,wTV=600,wTI=null;
+function toggleWorryTimer(){wTR=!wTR;document.getElementById('worryTimerBtn').textContent=wTR?'Pause':'Resume';if(wTR){wTI=setInterval(()=>{wTV--;const m=Math.floor(wTV/60).toString().padStart(2,'0');const s=(wTV%60).toString().padStart(2,'0');document.getElementById('worryTimer').textContent=m+':'+s;if(wTV<=0){clearInterval(wTI);wTR=false;document.getElementById('worryTimerBtn').textContent='Done';document.getElementById('worryTimer').textContent="Time's up ✓";}},1000);}else clearInterval(wTI);}
+function resetWorryTimer(){clearInterval(wTI);wTR=false;wTV=600;document.getElementById('worryTimer').textContent='10:00';document.getElementById('worryTimerBtn').textContent='Start';}
+
+// Worry AI
+async function getWorryResponse(){
+  const text=document.getElementById('worryText').value.trim();
+  if(!text)return;
+  const resp=document.getElementById('worryResponse');
+  resp.style.display='block';
+  resp.innerHTML='<div class="ai-response"><span class="ai-label">Perspective</span><div class="loading-dots"><span>●</span><span>●</span><span>●</span></div></div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:"You are a calm, compassionate companion helping someone experiencing burnout and work stress. They manage a large team handling identity systems. Importantly: in 6 years they have had only 3 production incidents and NONE were caused by their own systems — all were external causes. They worry about outages despite this strong track record. They have written a worry. Respond with warmth. Acknowledge what they've written. Gently remind them of their track record where relevant. Offer a brief grounded reframe. 3-4 sentences max. No bullet points. No clinical tone.",messages:[{role:'user',content:text}]})});
+    const data=await res.json();
+    const reply=data.content?.find(b=>b.type==='text')?.text||"Take a breath. Your systems have a 6-year clean record. That's not luck — that's your work.";
+    resp.innerHTML=`<div class="ai-response"><span class="ai-label">Perspective</span>${reply}</div>`;
+  }catch(e){
+    resp.innerHTML='<div class="ai-response"><span class="ai-label">Perspective</span>Take a breath. Your systems have never caused a production outage in 6 years. The anxiety is not the truth — your track record is.</div>';
+  }
+}
+function clearWorry(){document.getElementById('worryText').value='';document.getElementById('worryResponse').style.display='none';}
+
+// Winddown
+let wdD=new Set();
+function toggleWinddown(i){const el=document.getElementById('wd'+i);if(wdD.has(i)){wdD.delete(i);el.classList.remove('checked');el.querySelector('.check-box').textContent='';}else{wdD.add(i);el.classList.add('checked');el.querySelector('.check-box').textContent='✓';}document.getElementById('winddownProgress').style.width=(wdD.size/7*100)+'%';document.getElementById('winddownCount').textContent=wdD.size+' of 7';}
+function resetWinddown(){wdD.clear();for(let i=0;i<7;i++){const el=document.getElementById('wd'+i);el.classList.remove('checked');el.querySelector('.check-box').textContent='';}document.getElementById('winddownProgress').style.width='0%';document.getElementById('winddownCount').textContent='0 of 7';}
+
+// Service worker for offline (registered via blob)
+if('serviceWorker' in navigator){
+  const swCode=`
+    const CACHE='calm-space-v1';
+    const ASSETS=['/'];
+    self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
+    self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));});
+    self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response('Offline',{status:503}))));});
+  `;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+</script>
+</body>
+</html>
